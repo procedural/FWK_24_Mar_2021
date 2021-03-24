@@ -149,6 +149,7 @@ void (PRINTF)(const char *text, const char *stack, const char *file, int line, c
 #define _GLFW_WIN                           // glfw
 #define GLFW_INCLUDE_NONE                   // glfw
 #define LSH_GLFW_IMPLEMENTATION             // glfw
+#define HTTPS_IMPLEMENTATION                // https
 #define JAR_MOD_IMPLEMENTATION              // jar_mod
 #define JAR_XM_IMPLEMENTATION               // jar_xm
 #define JO_MPEG_COMPONENTS 3                // jo_mpeg
@@ -218,6 +219,7 @@ void (PRINTF)(const char *text, const char *stack, const char *file, int line, c
 #include "3rd/3rd_thread.h"
 #include "3rd/3rd_plmpeg.h"
 #include "3rd/3rd_jo_mpeg.h"
+#include "3rd/3rd_https.h"
 
 // ----------------------------------------------------------------------------
 // compat

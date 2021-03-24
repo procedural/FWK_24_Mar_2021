@@ -626,7 +626,7 @@ unsigned texture_update(texture_t *t, unsigned w, unsigned h, unsigned n, void *
     if( flags & TEXTURE_BC1 ) texel_type = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
     if( flags & TEXTURE_BC2 ) texel_type = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
     if( flags & TEXTURE_BC3 ) texel_type = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-    if( flags & TEXTURE_DEPTH ) texel_type = pixel_type = GL_DEPTH_COMPONENT;
+    if( flags & TEXTURE_DEPTH ) texel_type = pixel_type = GL_DEPTH_COMPONENT; // GL_DEPTH_COMPONENT32
 
     if( flags & TEXTURE_REPEAT ) wrap = GL_REPEAT;
     if( flags & TEXTURE_BORDER ) wrap = GL_CLAMP_TO_BORDER;
@@ -656,8 +656,10 @@ GLenum texture_type = t->flags & TEXTURE_ARRAY ? GL_TEXTURE_2D_ARRAY : GL_TEXTUR
     glTexParameteri(texture_type, GL_TEXTURE_WRAP_T, wrap);
     glTexParameteri(texture_type, GL_TEXTURE_MIN_FILTER, min_filter);
     glTexParameteri(texture_type, GL_TEXTURE_MAG_FILTER, mag_filter);
+#if 0
     if( flags & TEXTURE_DEPTH )   glTexParameteri(texture_type, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
     if( flags & TEXTURE_DEPTH )   glTexParameteri(texture_type, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+#endif
 //  if( flags & TEXTURE_BORDER )  glTexParameterfv(texture_type, GL_TEXTURE_BORDER_COLOR, border_color);
     if( flags & TEXTURE_MIPMAPS ) glGenerateMipmap(texture_type);
 
@@ -1583,7 +1585,7 @@ unsigned fbo(unsigned color_texture_id, unsigned depth_texture_id, int flags) {
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
     if( color_texture_id ) glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_texture_id, 0);
-    if( depth_texture_id ) glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth_texture_id, 0);
+    if( depth_texture_id ) glFramebufferTexture/*2D*/(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, /*GL_TEXTURE_2D,*/ depth_texture_id, 0); // GL_DEPTH_STENCIL_ATTACHMENT
 #if 0 // this is working; it's just not enabled for now
     else {
         // create a non-sampleable renderbuffer object for depth and stencil attachments
@@ -1598,7 +1600,7 @@ unsigned fbo(unsigned color_texture_id, unsigned depth_texture_id, int flags) {
     if(flags) glDrawBuffer(GL_NONE);
     if(flags) glReadBuffer(GL_NONE);
 
-#if 1
+#if 0
     GLenum result = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if( GL_FRAMEBUFFER_COMPLETE != result ) {
         PANIC("ERROR: Framebuffer not complete.");
@@ -1630,7 +1632,9 @@ void fbo_unbind() {
     fbo_bind(0);
 }
 void fbo_destroy(unsigned id) {
-    // glDeleteRenderbuffers(1, &renderbuffer);
+#if 0
+     glDeleteRenderbuffers(1, &renderbuffer);
+#endif
     glDeleteFramebuffers(1, &id);
 }
 
@@ -1731,7 +1735,7 @@ bool postfx_load_from_mem( postfx *fx, const char *name, const char *fs ) {
         "#define texcoord uv\n"
         "#define TEXCOORD uv\n"
         "uniform sampler2D iChannel0;\n"
-        "uniform sampler2DShadow iChannel1;\n"
+        "uniform sampler2D/*Shadow*/ iChannel1;\n"
         "uniform float iWidth, iHeight, iTime, iFrame, iMousex, iMousey;\n"
         "uniform float iChannelRes0x, iChannelRes0y;\n"
         "uniform float iChannelRes1x, iChannelRes1y;\n"
@@ -1833,12 +1837,12 @@ bool postfx_begin(postfx *fx, int width, int height) {
 
         // create texture, set texture parameters and content
         fx->diffuse[0] = texture_create(width, height, 4, NULL, TEXTURE_RGBA);
-        fx->depth[0] = texture_create(width, height, 1,  NULL, TEXTURE_DEPTH|TEXTURE_FLOAT);
+        fx->depth[0] = texture_create(width, height, 0/*1*/, NULL, TEXTURE_DEPTH|TEXTURE_FLOAT);
         fx->fb[0] = fbo(fx->diffuse[0].id, fx->depth[0].id, 0);
 
         // create texture, set texture parameters and content
         fx->diffuse[1] = texture_create(width, height, 4, NULL, TEXTURE_RGBA);
-        fx->depth[1] = texture_create(width, height, 1, NULL, TEXTURE_DEPTH|TEXTURE_FLOAT);
+        fx->depth[1] = texture_create(width, height, 0/*1*/, NULL, TEXTURE_DEPTH|TEXTURE_FLOAT);
         fx->fb[1] = fbo(fx->diffuse[1].id, fx->depth[1].id, 0);
     }
 
@@ -1851,13 +1855,15 @@ bool postfx_begin(postfx *fx, int width, int height) {
 
     fbo_bind(fx->fb[1]);
 
-    viewport_clear(true, true);
     viewport_clip(vec2(0,0), vec2(width, height));
+    //viewport_clear(true, true);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     fbo_bind(fx->fb[0]);
 
-    viewport_clear(true, true);
     viewport_clip(vec2(0,0), vec2(width, height));
+    //viewport_clear(true, true);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     return true;
 }
@@ -1873,6 +1879,7 @@ bool postfx_end(postfx *fx) {
 
     // disable depth test in 2d rendering
     glDisable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE); // no such thing: glDisable(GL_DEPTH_WRITE);
 
     int frame = 0;
     float t = time_ms() / 1000.f;
@@ -1926,6 +1933,8 @@ bool postfx_end(postfx *fx) {
             else glUseProgram(0);
         }
     }
+
+    glDepthMask(GL_TRUE); // no such thing: glEnable(GL_DEPTH_WRITE);
 
     return true;
 }

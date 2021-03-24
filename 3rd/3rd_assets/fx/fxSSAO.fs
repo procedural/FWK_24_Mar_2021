@@ -56,7 +56,7 @@ float readDepth(in vec2 coord) {
     if (coord.x<0||coord.y<0) return 1.0;
     float nearZ = camerarange.x;
     float farZ =camerarange.y;
-    float posZ = texture(iChannel1, vec3(coord, 0.));
+    float posZ = texture(iChannel1, coord).x;
     return (2.0 * nearZ) / (nearZ + farZ - posZ * (farZ - nearZ));
 }
 
@@ -99,7 +99,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
     //randomization texture:
     vec2 uv = fragCoord.xy / iResolution.xy;
-    vec2 random = getRandom( uv );
+    vec2 random = getRandom( uv + vec2(iTime) );
 
     //initialize stuff:
     float depth = readDepth(uv);
@@ -125,8 +125,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     }
 
     //final values, some adjusting:
-    vec3 finalAO = vec3(1.0-(ao/32.0)); // finalAO = vec3(0.7+finalAO*0.3);
     vec4 texel = texture(iChannel0, uv);
-    fragColor = vec4(texel.rgb * finalAO, texel.a);
-    //fragColor = vec4(finalAO, texel.a); // << debug
+    float finalAO = 1.0-(ao/32.0); finalAO = 0.5+finalAO*0.5; 
+    fragColor = vec4(texel.rgb * vec3(finalAO), texel.a);
+    //fragColor = vec4(vec3(finalAO), texel.a); // << debug
 }

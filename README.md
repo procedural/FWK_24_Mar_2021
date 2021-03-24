@@ -141,28 +141,34 @@ Any contribution to this repository is implicitly subjected to the same release 
 ## Artwork
 - [Goblin165cm](https://sketchfab.com/3d-models/halloween-little-witch-ccc023590bfb4789af9322864e42d1ab), for witch 3D model (CC BY 4.0).
 - [Nanofactory](https://sketchfab.com/3d-models/kgirls01-d2f946f58a8040ae993cda70c97b302c), for kgirls01 3D model (CC BY-NC-ND 4.0).
+- [Quaternius](https://www.patreon.com/quaternius), for the lovely 3D robots (CC0).
 - [Rxi](https://github.com/rxi/autobatch), for sprites & cats demo (MIT).
 
 ## Credits
 - [Assimp authors](https://github.com/assimp/assimp), for assimp (BSD3).
 - [Barerose](https://github.com/barerose), for swrap (CC0).
 - [Camilla Löwy](https://github.com/elmindreda), for glfw3 (Zlib)
+- [Dave Rand](https://tools.ietf.org/html/rfc1978) for ppp (PD).
 - [David Herberth](https://github.com/dav1dde/), for glad generated code (PD).
 - [David Reid](https://github.com/mackron), for miniaudio (PD).
-- [Dominik Madarász](https://github.com/zaklaus), for json5 parser (PD).
 - [Dominic Szablewski](https://github.com/phoboslab/pl_mpeg), for pl_mpeg (MIT).
-- [Joonas Pihlajamaa](https://github.com/jokkebk/JUnzip), for JUnzip library (PD).
+- [Dominik Madarász](https://github.com/zaklaus), for json5 parser (PD).
+- [Haruhiko Okumura](https://oku.edu.mie-u.ac.jp/~okumura/compression/) for lzss (PD).
+- [Igor Pavlov](https://www.7-zip.org/) for LZMA (PD).
+- [Ilya Muravyov](https://github.com/encode84) for bcm, balz, crush, ulz, lz4x (PD).
 - [Jon Olick](https://www.jonolick.com/), for jo_mp1 and jo_mpeg (PD).
+- [Joonas Pihlajamaa](https://github.com/jokkebk/JUnzip), for JUnzip library (PD).
 - [Joshua Reisenauer](https://github.com/kd7tck), for jar_mod and jar_xm (PD).
 - [Lee Salzman](https://github.com/lsalzman/iqm/tree/5882b8c32fa622eba3861a621bb715d693573420/demo), for IQM spec & player (PD).
 - [Lua authors](https://www.lua.org/), for Lua language (MIT).
-- [Mattias Gustavsson](https://github.com/mattiasgustavsson/libs), for thread.h (PD).
+- [Mattias Gustavsson](https://github.com/mattiasgustavsson/libs), for thread.h and https.h (PD).
 - [Micha Mettke](https://github.com/vurtun/nuklear), for nuklear (PD).
 - [Rich Geldreich](https://github.com/richgel999/miniz), for miniz (PD).
+- [Ross Williams](http://ross.net/compression/lzrw3a.html) for lzrw3a (PD).
 - [Sean Barrett](https://github.com/nothings), for stb_image, stb_image_write and stb_vorbis (PD).
 - [Sebastian Steinhauer](https://github.com/kieselsteini), for sts_mixer (PD).
 - [Tomas Pettersson](http://www.drpetter.se/), for sfxr (PD).
-- Special thanks to @ands (PD), @barerose (CC0), @datenwolf (WTFPL2), @evanw (CC0), @glampert (PD), @krig (CC0), @sgorsten (Unlicense), @vurtun (PD) for their math libraries.
+- Special thanks to @ands (PD), @barerose (CC0), @datenwolf (WTFPL2), @evanw (CC0), @glampert (PD), @krig (CC0), @sgorsten (Unlicense), @vurtun (PD) for their math libraries. Also to @eduardsui for the TLSe library (PD) and the LibTomCrypt library (PD).
 
 ## Links
 <a href="https://github.com/r-lyeh/FWK/issues"><img alt="Issues" src="https://img.shields.io/github/issues-raw/r-lyeh/FWK.svg"/></a>
