@@ -71,8 +71,17 @@ int main() {
     object_pivot(obj3, vec3(180,0,0));
 
     // animated models
-    model_t model4 = model(file_find("kgirls01.fbx"), 0);
-    rotation44(model4.pivot, -180,0,0,1);
+    model_t george = model(file_find("robots/george.fbx"), 0);
+    model_t leela = model(file_find("robots/leela.fbx"), 0);
+    model_t mike = model(file_find("robots/mike.fbx"), 0);
+    model_t stan = model(file_find("robots/stan.fbx"), 0);
+    model_t robots[] = { george, leela, mike, stan };
+    for( int i = 0; i < countof(robots); ++i ) {
+        // rotation44(kgirls01.pivot, -180,0,0,1); // kgirls01.fbx
+        rotation44(robots[i].pivot, -90,1,0,0); // george.fbx
+        //rotation44(robots[i].pivot, 90,1,0,0); // george.fbx
+        //scale44(robots[i].pivot, 0.2,0.2,0.2); // george.fbx
+    }
 
     // camera
     camera_t cam = camera();
@@ -151,16 +160,19 @@ int main() {
         profile(Skeletal update) {
             float delta = (window_delta()*30); // 30fps anim
             obj3->model.curframe = model_animate(obj3->model, obj3->model.curframe + delta);
+
+            for( int i = 0; i < countof(robots); ++i )
+            robots[i].curframe = model_animate(robots[i], robots[i].curframe + delta);
+
             ddraw_text(add3(obj3->pos,vec3(0,5,0)), 0.05, "Frame: %.1f", obj3->model.curframe);
-            model4.curframe = model_animate(model4, model4.curframe + delta);
         }
 
         profile(Skeletal render) {
-            {
-                float scale = 3.00; // 0.025;
-                mat44 M; copy44(M, model4.pivot); translate44(M,-10,-10,0); scale44(M, scale,scale,-scale);
+            for( int i = 0; i < countof(robots); ++i ) {
+                float scale = 0.20; // 0.025;
+                mat44 M; copy44(M, robots[i].pivot); translate44(M,-2*i,0,0); scale44(M, scale,scale,-scale);
                 float mvp[16]; multiply44x3(mvp, cam.proj, cam.view, M);
-                model_render(model4, mvp);
+                model_render(robots[i], mvp);
             }
         }
 

@@ -56,7 +56,7 @@ float readDepth(in vec2 coord) {
     if (coord.x<0||coord.y<0) return 1.0;
     float nearZ = camerarange.x;
     float farZ =camerarange.y;
-    float posZ = texture2D(iChannel1, coord).x;
+    float posZ = texture(iChannel1, vec3(coord, 0.));
     return (2.0 * nearZ) / (nearZ + farZ - posZ * (farZ - nearZ));
 }
 
@@ -128,5 +128,5 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     vec3 finalAO = vec3(1.0-(ao/32.0)); // finalAO = vec3(0.7+finalAO*0.3);
     vec4 texel = texture(iChannel0, uv);
     fragColor = vec4(texel.rgb * finalAO, texel.a);
-    // fragColor = vec4(finalAO,1.0); // << debug
+    //fragColor = vec4(finalAO, texel.a); // << debug
 }

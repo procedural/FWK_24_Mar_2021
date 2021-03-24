@@ -276,6 +276,21 @@ static size_t strlcpy(char *dst, const char *src, size_t dstcap) {
 }
 #endif
 
+static char *strswap( char *copy, const char *target, const char *replacement ) {
+    // replaced only if new text is shorter than old one
+    int rlen = strlen(replacement), diff = strlen(target) - rlen;
+    if( diff >= 0 ) {
+        for( char *s = copy, *e = s + strlen(copy); /*s < e &&*/ 0 != (s = strstr(s, target)); ) {
+            if( rlen ) s = (char*)memcpy( s, replacement, rlen ) + rlen;
+            if( diff ) memmove( s, s + diff, (e - (s + diff)) + 1 );
+        }
+    }
+    return copy;
+}
+static char *strcut( char *copy, const char *target ) {
+	return strswap(copy, target, "");
+}
+
 static char *wchar16to8_(const wchar_t *str) { // from wchar16(win) to utf8/ascii
     int i = 0;
     int n = wcslen(str) * 6 - 1;
@@ -504,6 +519,10 @@ int fwk_cook(char *filename, const char *ext, const char header[16], FILE *in, F
             char temp_iqm[16] = ".temp.iqm";
 
             rc = cookme("3rd\\3rd_tools\\ass2iqe %s -o %s \"%s\"", option_flip_uv, outfile = temp_iqe, infile = filename);
+#ifdef __linux__
+            if(rc) // small linux hack in case ass2iqe went wrong for any reason, like using very old /usr/include/assimp3 lib (ubuntu 16.04)
+            rc = cookme("wine 3rd\\3rd_tools\\ass2iqe.exe %s -o %s \"%s\"", option_flip_uv, outfile = temp_iqe, infile = filename);
+#endif
             tty_color(rc || !file_size(outfile) ? RED : color_from_textlog(os_exec_output()));
             printf("%s\nReturned: %d (%#x)\n", os_exec_output(), rc, rc);
 

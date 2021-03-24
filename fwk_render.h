@@ -1731,7 +1731,7 @@ bool postfx_load_from_mem( postfx *fx, const char *name, const char *fs ) {
         "#define texcoord uv\n"
         "#define TEXCOORD uv\n"
         "uniform sampler2D iChannel0;\n"
-        "uniform sampler2D iChannel1;\n"
+        "uniform sampler2DShadow iChannel1;\n"
         "uniform float iWidth, iHeight, iTime, iFrame, iMousex, iMousey;\n"
         "uniform float iChannelRes0x, iChannelRes0y;\n"
         "uniform float iChannelRes1x, iChannelRes1y;\n"
@@ -2201,6 +2201,11 @@ bool model_load_meshes(iqm_t *q, const struct iqmheader *hdr) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     FREE(verts);
 
+    const char *str = hdr->ofs_text ? (char *)&buf[hdr->ofs_text] : "";
+    for(int i = 0; i < (int)hdr->num_meshes; i++) {
+        struct iqmmesh *m = &meshes[i];
+        PRINTF("loaded mesh: %s\n", &str[m->name]);
+    }
     return true;
 }
 
@@ -2226,7 +2231,6 @@ bool model_load_anims(iqm_t *q, const struct iqmheader *hdr) {
     numanims = hdr->num_anims;
     numframes = hdr->num_frames;
 
-    const char *str = hdr->ofs_text ? (char *)&buf[hdr->ofs_text] : "";
     anims = (struct iqmanim *)&buf[hdr->ofs_anims];
     poses = (struct iqmpose *)&buf[hdr->ofs_poses];
     frames = CALLOC(hdr->num_frames * hdr->num_poses, sizeof(mat34));
@@ -2263,6 +2267,7 @@ bool model_load_anims(iqm_t *q, const struct iqmheader *hdr) {
         }
     }
 
+    const char *str = hdr->ofs_text ? (char *)&buf[hdr->ofs_text] : "";
     for(int i = 0; i < (int)hdr->num_anims; i++) {
         struct iqmanim *a = &anims[i];
         PRINTF("loaded anim[%d]: %s\n", i, &str[a->name]);
@@ -2280,8 +2285,6 @@ bool model_load_textures(iqm_t *q, const struct iqmheader *hdr) {
         textures[i] = 0;
 
         const char *str = hdr->ofs_text ? (char *)&buf[hdr->ofs_text] : "";
-        PRINTF("loaded mesh: %s\n", &str[m->name]);
-
         #if 0
         // diffuse+translucency,normal,specular+emissive,metallic+smoothness,ao/cavity or subdermis
         const char *pf = file_pathdir(pathfile);
@@ -2296,7 +2299,12 @@ bool model_load_textures(iqm_t *q, const struct iqmheader *hdr) {
             }
         }
         #else
-        textures[i] = texture( file_find(&str[m->material]), 0 ).id;
+        // remove any +unknown or unknown+ from materials (.fbx)
+        char *material_name = stringf("%s", &str[m->material]);
+        strcut(material_name, "unknown+");
+        strcut(material_name, "+unknown");
+
+        textures[i] = texture( file_find(material_name), 0 ).id;
         #endif
 
         if( textures[i] != texture_checker().id) {
